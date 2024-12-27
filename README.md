@@ -7,7 +7,7 @@ Location: Inside Moveit2 tutorial repository.<br>
 
 
 ## Build:
-Complete build:
+Complete build: <br>
 `cd ~/ws_moveit/` <br>
 `colcon build --mixin release` <br>
 Selective build: <br>
@@ -45,11 +45,12 @@ To launch Move_group:<br>
 
 
 <figure>
-  <img src="results/planner.png" width="800" />
+  <img src="results/planner.png" width="700" />
   <figcaption>Parameter set to specific Planner</figcaption>
 </figure>
 
 
+<br>
 <br>
 
 
@@ -64,19 +65,19 @@ To Publish to Pose Goal:<br>
 `ros2 run my_moveit test_node101 --ros-args -p use_path_constraint:=true`
 
 <figure>
-  <img src="results/path_constraint.png" width="800" />
+  <img src="results/path_constraint.png" width="700" />
   <figcaption>Using Constraint</figcaption>
 </figure>
 
 
 <br>
-
+<br>
 
 To Publish to Joint Goal:<br>
 `ros2 topic pub --once /joint_goal std_msgs/msg/String "data: '-1.86, -1.46, 0.990, -2.04,1.18,1.116,-0.10'"`
 
 <figure>
-  <img src="results/Screenshot-from-2024-12-27 23-25-45.png" width="800" />
+  <img src="results/ss.png" width="700" />
   <figcaption>Failed to Plan</figcaption>
 </figure>
 
