@@ -1,0 +1,103 @@
+// Log the original trajectory points
+            for (std::size_t i = 0; i < trajectory.getWayPointCount(); ++i) {
+                const auto &point = trajectory.getWayPoint(i);
+                RCLCPP_INFO(node_->get_logger(), "Positions: [%f, %f, %f]", point.positions[0], point.positions[1], point.positions[2]);
+            }
+
+            // Simplify the trajectory: Try removing waypoints if they are collision-free.
+            // Use the available methods to manipulate the trajectory.
+            for (std::size_t i = 1; i < trajectory.getWayPointCount() - 1; ++i) {
+                const auto &current_point = trajectory.getWayPoint(i);
+                const auto &prev_point = trajectory.getWayPoint(i - 1);
+                const auto &next_point = trajectory.getWayPoint(i + 1);
+                
+                // Check if the current point can be safely removed
+                if (isCollisionFree(prev_point, next_point)) {
+                    trajectory.insertWayPoint(i, prev_point, 0.0);  // Reinsert to smooth transition.
+                    trajectory.insertWayPoint(i + 1, next_point, 0.0);
+                    trajectory.removeSuffixWayPoint(1); // Remove the current point
+                }
+            }
+
+
+// trajectory handling:
+
+    void processTrajectory(robot_trajectory::RobotTrajectory &trajectory) {
+       // Get the list of waypoints in the trajectory
+    std::size_t waypoint_count = trajectory.getWayPointCount();
+    
+    // Vector to store the waypoints after shortening the trajectory
+    std::vector<moveit::core::RobotState> shortened_trajectory;
+
+    // Add the first waypoint
+    shortened_trajectory.push_back(trajectory.getFirstWayPoint());
+
+    // Iterate through the waypoints to check for collisions and remove points if necessary
+    for (std::size_t i = 1; i < waypoint_count; ++i) {
+        moveit::core::RobotState prev_state = trajectory.getWayPoint(i - 1);
+        moveit::core::RobotState curr_state = trajectory.getWayPoint(i);
+
+        // Interpolate between the previous and current state, and check for collision-free path
+        bool path_clear = true;
+        for (double fraction = 0.1; fraction < 1.0; fraction += 0.1) {
+            moveit::core::RobotState interpolated_state = interpolateStates(prev_state, curr_state, fraction);
+            if (!isCollisionFree(interpolated_state, move_group)) {
+                path_clear = false;
+                break;
+            }
+        }
+
+        // If the path is clear, add the current waypoint to the shortened trajectory
+        if (path_clear) {
+            shortened_trajectory.push_back(curr_state);
+        }
+    }
+
+    // Clear the current trajectory and add back the shortened waypoints
+    trajectory.clear();
+    for (const auto &state : shortened_trajectory) {
+        trajectory.addSuffixWayPoint(state, 0.0);
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Trajectory shortening completed.");
+}
+
+// Function to interpolate between two robot states
+moveit::core::RobotState interpolateStates(const moveit::core::RobotState &state1, const moveit::core::RobotState &state2, double fraction) {
+    moveit::core::RobotState interpolated_state(state1.getRobotModel());
+    for (size_t i = 0; i < state1.getVariableCount(); ++i) {
+        double interpolated_value = state1.getVariablePosition(i) + (state2.getVariablePosition(i) - state1.getVariablePosition(i)) * fraction;
+        interpolated_state.setVariablePosition(i, interpolated_value);
+    }
+    return interpolated_state;
+}
+
+// Function to check if a robot state is collision-free
+bool isCollisionFree(const moveit::core::RobotState &state) {
+    // Set the robot's state and perform a planning check
+    arm_group_interface_.setStartState(state);
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    arm_group_interface_.plan(plan);
+
+    // Return true if the plan is successful, meaning the path is collision-free
+    return plan.error_code_.val == moveit::core::MoveItErrorCode::SUCCESS;
+}
+
+
+
+
+//main
+
+robot_trajectory::RobotTrajectory trajectory(move_group_manager.getMoveGroupInterface().getRobotModel(), "panda_arm");
+
+        // Populate trajectory with waypoints (for example)
+        std::vector<geometry_msgs::msg::Pose> waypoints;
+
+        // Assume waypoints are populated here
+
+        trajectory.insertWayPoint(waypoints);  // Set waypoints for the trajectory
+
+        processTrajectory(trajectory);  // Shorten the trajectory
+
+        // Plan and execute with the shortened trajectory
+        move_group.execute(trajectory);
