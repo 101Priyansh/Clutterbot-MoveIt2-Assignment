@@ -1,3 +1,4 @@
+//Attempts
 // Log the original trajectory points
             for (std::size_t i = 0; i < trajectory.getWayPointCount(); ++i) {
                 const auto &point = trajectory.getWayPoint(i);
