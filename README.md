@@ -16,8 +16,14 @@ colcon build --packages-select my_moveit
 `
 
 ## Description of scripts:
-1. **test_node101.cpp**: Sends Pose goal and Joint goal using custom planners and with path constraints. Conatins Subscriber for Pose goal and Joint Goal along with PoseToPlan and Joint Function with Custom Planner Loader and Path cnstraints. arguments: use_custom_planner,use_path_constraint.
-2. **obs_planner.cpp**: Plans for pose with and without obstacle and executes the shorter trajectory. Contains Obstacle addition and removing functions and Trajectory Processing function.
+1. **test_node101.cpp**: <br>
+* Sends Pose goal and Joint goal using custom planners and with path constraints.
+* Contains Subscriber for Pose goal and Joint Goal along with PoseToPlan and Joint Function with Custom Planner Loader and Path cnstraints.
+* Arguments: use_custom_planner,use_path_constraint.
+
+3. **obs_planner.cpp**: <br>
+* Plans for pose with and without obstacle and executes the shorter trajectory.
+* Contains Obstacle addition and removing functions and Trajectory Processing function.
 
 ## Commands:
 
@@ -38,7 +44,7 @@ To Publish to _Joint Goal_:<br>
 ### Part 2: Functions for Pose goal and Joint goal.
 
 To launch Move_group:<br>
-`ros2 launch ws_moveit2 demo.launch.py` (using the tutorial's launch file).
+`ros2 launch ws_moveit2 demo.launch.py`
 
 ### Part 2.1: To Start node with custom planner and without constraints:
 `ros2 run my_moveit test_node101 --ros-args -p use_custom_planner:=true`
