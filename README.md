@@ -116,7 +116,7 @@ To _add obstacle_, plan, with and without obstacle and _post processing_:<br>
     <figcaption>Trajectory 1</figcaption>
   </figure>
   <figure style="display: inline-block; text-align: center;">
-    <img src="results/short_traj_process1.gif" width="350" />
+    <img src="results/short_traj_process2.gif" width="350" />
     <figcaption>Trajectory 2</figcaption>
   </figure>
 </div>
