@@ -1,4 +1,4 @@
-# Clutterbot-MoveIt2-Assignment
+# MoveIt2-C++-Trajectory Post-processing
 
 ## Instructions:
 
