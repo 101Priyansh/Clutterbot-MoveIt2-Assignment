@@ -1,0 +1,35 @@
+name: my_moveit_build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup ROS 2 Humble
+      uses: ros-tooling/setup-ros@v0.3
+      with:
+        distribution: humble
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        rosdep update
+        rosdep install --from-paths src --ignore-src -r -y
+
+    - name: Build my_moveit
+      run: |
+        colcon build --packages-select my_moveit
+
+    - name: Test my_moveit
+      run: |
+        colcon test --packages-select my_moveit
+        colcon test-result --verbose
